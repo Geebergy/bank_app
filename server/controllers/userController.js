@@ -103,7 +103,6 @@ function createUser(userData) {
   // log user in
   const loginUser = (req, res) => {
     const { username, password } = req.body;
-    console.log('Reached server, details:', username, password);
 
     // Check if user exists
     db.query('SELECT * FROM users WHERE acct_username = ?', [username], (err, results) => {
@@ -112,7 +111,6 @@ function createUser(userData) {
             return res.status(500).json({ error: 'Database query error' });
         }
 
-        console.log('Query results:', results);
 
         if (!results || results.length === 0) {
             console.log('User not found');
@@ -120,25 +118,20 @@ function createUser(userData) {
         }
 
         const user = results[0];
-        console.log('Found user:', user);
 
         // Compare password
-        console.log('this is password:', password, 'and this is user password:', user.acct_password)
         bcrypt.compare(password, user.acct_password, (err, isMatch) => {
             if (err) {
                 console.error('Error comparing passwords:', err);
                 return res.status(500).json({ error: 'Password comparison error' });
             }
 
-            console.log('Password match:', isMatch);
 
             if (!isMatch) {
-                console.log('Passwords do not match');
                 return res.status(401).json({ error: 'Invalid username or password' });
             }
 
             // Password matches, return user ID
-            console.log('Login successful, user ID:', user.id);
             res.json({ userId: user.id });
         });
     });
@@ -192,7 +185,6 @@ const updateProfile = (req, res) => {
 
   const query = `UPDATE users SET acct_phone = ?, acct_imf = ? WHERE id = ?`;
   const values = [phone, image, userId];
-  console.log(values)
 
   db.query(query, values, (err, results) => {
     if (err) {

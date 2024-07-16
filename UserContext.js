@@ -28,7 +28,7 @@ export const UserProvider = ({ children }) => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await axios.get(`http://192.168.140.241:3003/user/getUserData/${userId}`);
+        const response = await axios.get(`https://bank-app-4f6l.onrender.com/user/getUserData/${userId}`);
         setUserData(response.data);
       } catch (error) {
         console.error('Error retrieving user:', error);
@@ -38,7 +38,7 @@ export const UserProvider = ({ children }) => {
 
     const fetchUserCardData = async () => {
       try {
-        const response = await axios.get(`http://192.168.140.241:3003/user/getUserCardData/${userId}`);
+        const response = await axios.get(`https://bank-app-4f6l.onrender.com/user/getUserCardData/${userId}`);
         setUserCardData(response.data);
       } catch (error) {
         console.error('Error retrieving user card data:', error);
@@ -54,7 +54,7 @@ export const UserProvider = ({ children }) => {
 
   const handleGetUser = async (userId) => {
     try {
-      const response = await axios.get(`http://192.168.140.241:3003/user/getUserData/${userId}`);
+      const response = await axios.get(`https://bank-app-4f6l.onrender.com/user/getUserData/${userId}`);
       setUserData(response.data);
     } catch (error) {
       console.error('Error retrieving user:', error);
@@ -63,7 +63,7 @@ export const UserProvider = ({ children }) => {
   };
   const handleGetUserCardData = async (userId) => {
     try {
-      const response = await axios.get(`http://192.168.140.241:3003/user/getUserCardData/${userId}`);
+      const response = await axios.get(`https://bank-app-4f6l.onrender.com/user/getUserCardData/${userId}`);
       setUserCardData(response.data);
     } catch (error) {
       console.error('Error retrieving user:', error);

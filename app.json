@@ -1,23 +1,18 @@
 {
   "expo": {
     "name": "Bank App",
-    "slug": "Bank App",
-    "version": "1.0.0",
+    "slug": "vtuAPP",
+    "version": "1.0.1",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/mobile-banking-128px.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/mobile-banking-532px.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
     "plugins": [
-      [
-        "expo-image-picker",
-        {
-          "photosPermission": "The app accesses your photos to let you share them with your friends."
-        }
-      ]
+      "expo-asset"
     ],
     "ios": {
       "supportsTablet": true,
@@ -25,21 +20,19 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/mobile-banking-128px.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.thebankers.bankApp"
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/mobile-banking-128px.png"
     },
-    "plugins": [
-      "expo-asset"
-    ],
     "extra": {
       "eas": {
         "projectId": "0a3b189b-62a5-4d6e-ac9f-9d6cd85916eb"
       }
-    }
+    },
+    "owner": "thegilo"
   }
 }

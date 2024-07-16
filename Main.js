@@ -528,8 +528,7 @@ const fetchTransactions = async () => {
   try {
     const userId = await AsyncStorage.getItem('userId');
     if (userId) {
-      console.log(`Fetching transactions for user ID: ${userId}`);
-      const response = await axios.get(`http://192.168.140.241:3003/user/getLoansByUserId/${userId}`);
+      const response = await axios.get(`https://bank-app-4f6l.onrender.com/user/getLoansByUserId/${userId}`);
       const transactions = response.data;
       if (transactions.length > 0) {
         transactions.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));

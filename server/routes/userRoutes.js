@@ -19,7 +19,6 @@ app.post('/createUser', async (req, res) => {
   const  userData  = req.body;
   const username = userData.acct_username;
   const email = userData.acct_email;
-  console.log('user detected:', username, email)
 
     // Check if username or email already exists
   db.query('SELECT * FROM users WHERE acct_username = ? OR acct_email = ?', [username, email], (err, results) => {
@@ -134,7 +133,6 @@ app.post('/save_withdrawal', (req, res) => {
 // Endpoint to retrieve a user by ID
 app.get('/getUserData/:id', (req, res) => {
   const userId = req.params.id;
-  console.log('get user api reached')
 
   getUserById(userId)
     .then(user => {
@@ -292,6 +290,6 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 // Route definition
-app.post('/update-profile', upload.single('image'), updateProfile);
+app.post('/update-profile', updateProfile);
 // Export your app instance for use in other files
 module.exports = app;

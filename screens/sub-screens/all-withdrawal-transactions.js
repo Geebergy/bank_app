@@ -15,7 +15,7 @@ export default function AllTransactions() {
 
   const fetchTransactions = async () => {
     const userId = await AsyncStorage.getItem('userId');
-    await axios.get(`http://192.168.140.241:3003/user/getWithdrawalsByUserId/${userId}`)
+    await axios.get(`https://bank-app-4f6l.onrender.com/user/getWithdrawalsByUserId/${userId}`)
       .then(response => {
         setTransactions(response.data); // Correctly access the response data
         setLoading(false);

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView} from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, ActivityIndicator} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -12,17 +12,19 @@ const LoginForm = ({ navigation }) => {
     const [passwordVisible, setPasswordVisible] = useState(false);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [loadingPage, setLoadingPage] = useState(false);
 
 
 // Function to handle user login
 const handleLogin = async () => {
+    setLoadingPage(true);
     try {
         const userData = {
             username: username,
             password: password,
         };
 
-        const response = await axios.post('http://192.168.140.241:3003/user/userLogin', userData);
+        const response = await axios.post('https://bank-app-4f6l.onrender.com/user/userLogin', userData);
 
         if (response.status === 200) {
             const { userId } = response.data;
@@ -32,8 +34,10 @@ const handleLogin = async () => {
                 text1: 'Login Successful',
                 position: 'top'
             });
+            setLoadingPage(false);
             navigation.navigate('Main');
         } else {
+            setLoadingPage(false);
             Toast.show({
                 type: 'error',
                 text1: 'Login Failed',
@@ -49,6 +53,7 @@ const handleLogin = async () => {
             text2: 'Please confirm your details and try again',
             position: 'top'
         });
+        setLoadingPage(false);
     }
 };
 
@@ -98,6 +103,10 @@ const handleLogin = async () => {
                         </TouchableOpacity>
                     </View>
 
+                    {loadingPage ? (
+                        <ActivityIndicator />
+                    ):
+                    (
                     <TouchableOpacity onPress={handleLogin} style={styles.submitBtn}>
                         <View style={styles.spaceBetween}>
                             <Text style={{ color: 'white', fontSize: 15, marginRight: 8 }}>Submit</Text>
@@ -108,6 +117,7 @@ const handleLogin = async () => {
                             />
                         </View>
                     </TouchableOpacity>
+                    )}
 
                     <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
                         <Text style={{ color: 'purple', textAlign: 'right', marginTop: 20 }}>Create account</Text>

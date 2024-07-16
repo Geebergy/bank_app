@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, Button, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, Button, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import Section1 from '../sections/Section1';
 import Section2 from '../sections/Section2';
 import Section3 from '../sections/Section3'; // We'll define Section3 next
@@ -14,6 +14,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const RegistrationForm = ({navigation}) => {
     const [currentPage, setCurrentPage] = useState(1);
+    const [loadingPage, setLoadingPage] = useState(false);
 
     // Central state to collect user data
     const [userData, setUserData] = useState({
@@ -45,24 +46,26 @@ const RegistrationForm = ({navigation}) => {
 
 
     const handleConfirm = async () => {
+        setLoadingPage(true);
         if (userData.acct_password !== userData.confirmPassword) {
           Toast.show({
             type: 'error',
             text1: 'Passwords do not match',
             position: 'top'
           });
+          setLoadingPage(false);
           return; // Exit function early if passwords don't match
         }
       
-        console.log('Button tapped');
       
-        axios.post('http://192.168.140.241:3003/user/createUser', userData)
+        axios.post('https://bank-app-4f6l.onrender.com/user/createUser', userData)
           .then(response => {
             Toast.show({
               type: 'success',
               text1: 'User Account Created Successfully',
               position: 'top'
             });
+            setLoadingPage(false);
             // Optionally, you can navigate to another screen or reset form fields
             navigation.navigate('LoginForm');
           })
@@ -78,6 +81,7 @@ const RegistrationForm = ({navigation}) => {
               text2: errorMessage,
               position: 'top'
             });
+            setLoadingPage(false);
           });
       };
       
@@ -153,12 +157,16 @@ const RegistrationForm = ({navigation}) => {
                 )}
                 {currentPage === 3 && (
                     <TouchableOpacity style={styles.checkButton}>
-                    <Ionicons
+                    {loadingPage ? (
+                        <ActivityIndicator />
+                    ) : (
+                        <Ionicons
                         name="checkmark"
                         color='white'
                         size={24}
                         onPress={handleConfirm}
                     />
+                    )}
                     </TouchableOpacity>
                 )}
             </View>

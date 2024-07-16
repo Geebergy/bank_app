@@ -18,7 +18,6 @@ function App() {
     const checkOnboardingStatus = async () => {
       const userId = await AsyncStorage.getItem('userId');
       const route = userId ? 'Main' : 'LoginForm';
-      console.log('this is the route', route);
       setInitialRouteName(route);
     };
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ScrollView, View, Text, TextInput, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+import { ScrollView, View, Text, TextInput, TouchableOpacity, StyleSheet, Dimensions, ActivityIndicator } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -27,6 +27,7 @@ export default function DomesticTransfer() {
   const [bankName, setBankName] = useState('');
   const [beneficiaryAccountNumber, setBeneficiaryAccountNumber] = useState('');
   const [text, setText] = useState('');
+  const [loadingPage, setLoadingPage] = useState(false);
 
   const refreshData = async () =>{
     const userId = await AsyncStorage.getItem('userId');
@@ -65,6 +66,7 @@ export default function DomesticTransfer() {
   const randomRef = generateRandomReference();
 
   const handleConfirm = async () => {
+    setLoadingPage(true);
     if(userData && userData.acct_balance){
       if(amount > userData.acct_balance){
         Toast.show({
@@ -72,6 +74,7 @@ export default function DomesticTransfer() {
           text1: 'Insufficient Funds',
           position: 'top'
         });
+        setLoadingPage(false);
       }
       else{
         const userId = await AsyncStorage.getItem('userId');
@@ -90,7 +93,7 @@ export default function DomesticTransfer() {
     dom_status: 1,
 };
 
-    axios.post('http://192.168.140.241:3003/user/domestic_transfer', userData)
+    axios.post('https://bank-app-4f6l.onrender.com/user/domestic_transfer', userData)
     .then(response => {
       Toast.show({
         type: 'success',
@@ -99,6 +102,7 @@ export default function DomesticTransfer() {
       });
       resetForm(); // Reset form fields
       refreshData();
+      setLoadingPage(false);
 
     })
     .catch(error => {
@@ -109,6 +113,7 @@ export default function DomesticTransfer() {
         text2: 'Please confirm your details and try again',
         position: 'top'
       });
+      setLoadingPage(false);
     });
       }
     }
@@ -120,6 +125,11 @@ export default function DomesticTransfer() {
       <View style={styles.container}>
         <Text style={{ fontSize: 32, textAlign: 'center', marginBottom: 40, fontWeight: '100' }}>Domestic Transfer</Text>
 
+        {loadingPage ? (
+          <ActivityIndicator />
+        ) : (
+          <>
+            
         {/* Amount */}
         <View style={styles.formGroup}>
           <Text style={styles.label}>Amount</Text>
@@ -214,6 +224,8 @@ export default function DomesticTransfer() {
           <Ionicons name="exit-outline" size={24} color="white" style={styles.exitIcon} />
           <Text style={{ color: 'white', marginLeft: 2, fontSize: 15 }}>Transfer</Text>
         </TouchableOpacity>
+          </>
+        )}
       </View>
     </ScrollView>
   );

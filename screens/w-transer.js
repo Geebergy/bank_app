@@ -21,6 +21,7 @@ export default function WireTransfer() {
   const [country, setCountry] = useState('none');
   const [countries, setCountries] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingPage, setLoadingPage] = useState(false);
 
   const refreshData = async () =>{
     const userId = await AsyncStorage.getItem('userId');
@@ -57,6 +58,7 @@ export default function WireTransfer() {
   const randomRef = generateRandomReference();
 
   const handleConfirm = async () => {
+    setLoadingPage(true);
     if(userData && userData.acct_balance){
       if (amount > userData.acct_balance){
         Toast.show({
@@ -64,6 +66,7 @@ export default function WireTransfer() {
           text1: 'Insufficient Funds!',
           position: 'top'
         });
+        setLoadingPage(false);
       }
       else{
         const userId = await AsyncStorage.getItem('userId');
@@ -85,7 +88,7 @@ export default function WireTransfer() {
 
 };
 
-    axios.post('http://192.168.140.241:3003/user/wire_transfer', userData)
+    axios.post('https://bank-app-4f6l.onrender.com/user/wire_transfer', userData)
     .then(response => {
       Toast.show({
         type: 'success',
@@ -94,6 +97,7 @@ export default function WireTransfer() {
       });
       resetForm(); // Reset form fields
       refreshData();
+      setLoadingPage(false);
     })
     .catch(error => {
       console.error('Error with wire transfer:', error);
@@ -103,6 +107,7 @@ export default function WireTransfer() {
         text2: 'Please check your details and try again',
         position: 'top'
       });
+      setLoadingPage(false);
     });
     
       }
@@ -142,7 +147,12 @@ export default function WireTransfer() {
       <View style={styles.container}>
         <Text style={{ fontSize: 32, textAlign: 'center', marginBottom: 40, fontWeight: '100' }}>Wire Transfer</Text>
 
-        {/* Amount */}
+        {loadingPage ? (
+          <ActivityIndicator />
+        ):
+        (
+          <>
+            {/* Amount */}
         <View style={styles.formGroup}>
           <Text style={styles.label}>Amount</Text>
           <View style={styles.inputContainer}>
@@ -282,6 +292,8 @@ export default function WireTransfer() {
           <Ionicons name="exit-outline" size={24} color="white" style={styles.exitIcon} />
           <Text style={{ color: 'white', marginLeft: 2, fontSize: 15 }}>Transfer</Text>
         </TouchableOpacity>
+          </>
+        )}
       </View>
     </ScrollView>
   );

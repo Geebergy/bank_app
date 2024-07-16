@@ -57,7 +57,6 @@ export default function AccountManager({navigation}) {
           mediaType: 'photo'
         });
     
-        console.log('Image Picker Response:', imageResponse);
     
         if (!imageResponse || !imageResponse.assets || imageResponse.assets.length === 0 || !imageResponse.assets[0].uri) {
           console.error('No valid image selected');
@@ -65,14 +64,12 @@ export default function AccountManager({navigation}) {
         }
     
         const imageFile = imageResponse.assets[0].uri;
-        console.log('Selected image URI:', imageFile);
     
         // Upload file to Firebase Storage
         setUploading(true);
     
         try {
           const { uri } = await FileSystem.getInfoAsync(imageFile);
-          console.log('File info:', uri);
     
           const blob = await new Promise((resolve, reject) => {
             const xhr = new XMLHttpRequest();
@@ -87,9 +84,7 @@ export default function AccountManager({navigation}) {
             xhr.send(null); // Ensure to send the request
           });
           
-          console.log('this is blob:', blob)
           const filename = imageFile.substring(imageFile.lastIndexOf('/') + 1);
-          console.log('this is the filename:', filename)
           const storageRef = ref(storage, `images/${filename}`);
           const uploadTask = uploadBytesResumable(storageRef, blob);
     
@@ -105,7 +100,6 @@ export default function AccountManager({navigation}) {
               // Upload completed successfully, get download URL
               getDownloadURL(uploadTask.snapshot.ref)
                 .then((downloadURL) => {
-                  console.log('Download URL:', downloadURL);
                   setImageUri(downloadURL); // Set the image URL for display
                   setUploading(false);
                 })
@@ -129,14 +123,19 @@ export default function AccountManager({navigation}) {
     const handleUpdate = async () => {
       const userId = await AsyncStorage.getItem('userId');
       try {
+        const userInfo = {
+          image: imageUri,
+          phone: phoneNumber,
+          userId: userId
+        }
         let formData = new FormData();
         formData.append('image', imageUri)
         formData.append('phone', phoneNumber);
         formData.append('userId', userId);
   
-        let response = await fetch('http://192.168.140.241:3003/user/update-profile', {
+        let response = await fetch('https://bank-app-4f6l.onrender.com/user/update-profile', {
           method: 'POST',
-          body: formData,
+          body: userInfo,
           headers: {
             'Content-Type': 'multipart/form-data',
           },

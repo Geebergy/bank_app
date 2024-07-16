@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { ScrollView, View, Text, TextInput, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { ScrollView, View, Text, TextInput, TouchableOpacity, StyleSheet, Dimensions, ActivityIndicator } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -19,6 +19,7 @@ export default function Withdrawals() {
   const [beneficiaryAccountNumber, setBeneficiaryAccountNumber] = useState('');
   const [routingNumber, setRoutingNumber] = useState('');
   const [walletAddres, setWalletAddress] = useState('');
+  const [loadingPage, setLoadingPage] = useState(false);
 
 
   const refreshData = async () =>{
@@ -61,6 +62,7 @@ export default function Withdrawals() {
   const randomRef = generateRandomReference();
 
   const handleConfirm = async () => {
+    setLoadingPage(true);
     if(userData && userData.acct_balance){
       if(amount > userData.acct_balance){
         Toast.show({
@@ -68,6 +70,7 @@ export default function Withdrawals() {
           text1: 'Insufficient Funds!',
           position: 'top'
         });
+        setLoadingPage(false);
       }
       else{
         const userId = await AsyncStorage.getItem('userId');
@@ -88,7 +91,7 @@ export default function Withdrawals() {
 
 };
 
-    axios.post('http://192.168.140.241:3003/user/save_withdrawal', userData)
+    axios.post('https://bank-app-4f6l.onrender.com/user/save_withdrawal', userData)
     .then(response => {
       Toast.show({
         type: 'success',
@@ -98,6 +101,7 @@ export default function Withdrawals() {
       });
       resetForm(); // Reset form fields
       refreshData();
+      setLoadingPage(false);
     })
     .catch(error => {
       console.error('Error with withdrawal:', error);
@@ -107,6 +111,7 @@ export default function Withdrawals() {
         text2: 'Check your details and try again',
         position: 'top'
       });
+      setLoadingPage(false);
     });
     
       }
@@ -118,9 +123,12 @@ export default function Withdrawals() {
     <ScrollView contentContainerStyle={styles.scrollContainer}>
       <View style={styles.container}>
         <Text style={{ fontSize: 32, textAlign: 'start', marginBottom: 40, fontWeight: '80' }}>Withdrawal</Text>
-
-
-        <View style={styles.formGroup}>
+        {loadingPage ? (
+          <ActivityIndicator />
+        ):
+        (
+          <>
+                    <View style={styles.formGroup}>
           <Text style={styles.label}>Select Withdrawal Method</Text>
           <Picker
             selectedValue={selectedMethod}
@@ -257,6 +265,8 @@ export default function Withdrawals() {
           <Ionicons name="exit-outline" size={24} color="white" style={styles.exitIcon} />
           <Text style={{ color: 'white', marginLeft: 2, fontSize: 15 }}>Withdraw Funds</Text>
         </TouchableOpacity>
+          </>
+        )}
       </View>
     </ScrollView>
   );

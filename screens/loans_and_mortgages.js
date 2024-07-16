@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { ScrollView, View, Text, TextInput, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { ScrollView, View, Text, TextInput, TouchableOpacity, StyleSheet, Dimensions, ActivityIndicator } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
@@ -14,6 +14,7 @@ export default function LoansAndMortgages() {
   const [amount, setAmount] = useState('');
   const [customerText, setCustomerText] = useState('Customer Service');
   const [text, setText] = useState('');
+  const [loadingPage, setLoadingPage] = useState(false);
 
   const refreshData = async () =>{
     const userId = await AsyncStorage.getItem('userId');
@@ -42,7 +43,7 @@ export default function LoansAndMortgages() {
   const randomRef = generateRandomReference();
 
   const handleConfirm = async () => {
-    console.log('ell')
+    setLoadingPage(true);
     const userId = await AsyncStorage.getItem('userId');
 
     
@@ -55,7 +56,7 @@ export default function LoansAndMortgages() {
     loan_message: 'none',
 };
 
-    axios.post('http://192.168.140.241:3003/user/save_loan', userData)
+    axios.post('https://bank-app-4f6l.onrender.com/user/save_loan', userData)
     .then(response => {
       Toast.show({
         type: 'success',
@@ -65,6 +66,7 @@ export default function LoansAndMortgages() {
       });
       resetForm(); // Reset form fields
       refreshData();
+      setLoadingPage(false);
     })
     .catch(error => {
       console.error('Error with loan request:', error);
@@ -74,6 +76,7 @@ export default function LoansAndMortgages() {
         text2: 'Check your details and try again',
         position: 'top'
       });
+      setLoadingPage(false);
     });
     
 };
@@ -81,7 +84,12 @@ export default function LoansAndMortgages() {
     <ScrollView contentContainerStyle={styles.scrollContainer}>
       <View style={styles.container}>
         <Text style={{ fontSize: 32, textAlign: 'center', marginBottom: 40, fontWeight: '100' }}>Loan/Mortgages Application</Text>
-
+      {loadingPage ? (
+        <ActivityIndicator />
+      ):
+      (
+        <>
+          
         {/* Amount */}
         <View style={styles.formGroup}>
           <Text style={styles.label}>Amount</Text>
@@ -126,6 +134,8 @@ export default function LoansAndMortgages() {
           <Ionicons name="exit-outline" size={24} color="white" style={styles.exitIcon} />
           <Text style={{ color: 'white', marginLeft: 1, fontSize: 15 }}>Submit</Text>
         </TouchableOpacity>
+        </>
+      )}
       </View>
     </ScrollView>
   );

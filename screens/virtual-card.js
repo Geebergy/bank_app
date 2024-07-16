@@ -94,7 +94,7 @@ export default function VirtualCards() {
             card_status: 2,
         };
 
-        axios.post('http://192.168.140.241:3003/user/save_card', userInfo)
+        axios.post('https://bank-app-4f6l.onrender.com/user/save_card', userInfo)
             .then(response => {
                 Toast.show({
                     type: 'success',

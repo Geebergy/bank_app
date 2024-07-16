@@ -21,6 +21,7 @@ export default function Deposit() {
     const [uploading, setUploading] = useState(false);
     const [loading, setLoading] = useState(true);
     const [walletAddress, setWalletAddress] = useState(null);
+    const [loadingPage, setLoadingPage] = useState(false);
 
     const refreshData = async () =>{
       const userId = await AsyncStorage.getItem('userId');
@@ -50,7 +51,6 @@ export default function Deposit() {
           mediaType: 'photo'
         });
     
-        console.log('Image Picker Response:', imageResponse);
     
         if (!imageResponse || !imageResponse.assets || imageResponse.assets.length === 0 || !imageResponse.assets[0].uri) {
           console.error('No valid image selected');
@@ -58,14 +58,12 @@ export default function Deposit() {
         }
     
         const imageFile = imageResponse.assets[0].uri;
-        console.log('Selected image URI:', imageFile);
     
         // Upload file to Firebase Storage
         setUploading(true);
     
         try {
           const { uri } = await FileSystem.getInfoAsync(imageFile);
-          console.log('File info:', uri);
     
           const blob = await new Promise((resolve, reject) => {
             const xhr = new XMLHttpRequest();
@@ -80,9 +78,7 @@ export default function Deposit() {
             xhr.send(null); // Ensure to send the request
           });
           
-          console.log('this is blob:', blob)
           const filename = imageFile.substring(imageFile.lastIndexOf('/') + 1);
-          console.log('this is the filename:', filename)
           const storageRef = ref(storage, `images/${filename}`);
           const uploadTask = uploadBytesResumable(storageRef, blob);
     
@@ -98,7 +94,6 @@ export default function Deposit() {
               // Upload completed successfully, get download URL
               getDownloadURL(uploadTask.snapshot.ref)
                 .then((downloadURL) => {
-                  console.log('Download URL:', downloadURL);
                   setImageUri(downloadURL); // Set the image URL for display
                   setUploading(false);
                 })
@@ -137,6 +132,7 @@ export default function Deposit() {
     
   
     const handleConfirm = async () => {
+      setLoadingPage(true);
       const userId = await AsyncStorage.getItem('userId');
       const userData = {
           user_id: userId,
@@ -149,7 +145,7 @@ export default function Deposit() {
       };
       // data save logic
   
-      axios.post('http://192.168.140.241:3003/user/addDeposit', userData)
+      axios.post('https://bank-app-4f6l.onrender.com/user/addDeposit', userData)
       .then(response => {
         Toast.show({
           type: 'success',
@@ -158,6 +154,7 @@ export default function Deposit() {
         });
         resetForm(); // Reset form fields
         refreshData();
+        setLoadingPage(false);
       })
       .catch(error => {
         console.error('Error with domestic transfer:', error);
@@ -167,6 +164,7 @@ export default function Deposit() {
           text2: 'Please confirm your details and try again',
           position: 'top'
         });
+        setLoadingPage(false);
       });
       
   };
@@ -178,11 +176,10 @@ export default function Deposit() {
 
   const fetchWallets = async () => {
     const userId = await AsyncStorage.getItem('userId');
-    await axios.get(`http://192.168.140.241:3003/user/getWalletAddress/${userId}`)
+    await axios.get(`https://bank-app-4f6l.onrender.com/user/getWalletAddress/${userId}`)
       .then(response => {
         setWalletAddress(response.data); // Correctly access the response data
         setLoading(false);
-        console.log(JSON.stringify(response.data))
       })
       .catch(error => {
         console.error('Error fetching withdrawal data:', error);
@@ -197,19 +194,22 @@ export default function Deposit() {
   
     const handleCopyText = () => {
       if(selectedValue === 'none'){
-        console.log('Select Crypto Type');
       }
       else{
         Clipboard.setString(copiedText);
         // Optionally, you can display a message or toast to inform the user that the text has been copied
-        console.log('Text copied to clipboard:', copiedText);
       }
    
     };
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.container}>
-      <View style={styles.formGroup}>
+      {loadingPage ? (
+        <ActivityIndicator />
+      ):
+      (
+        <>
+          <View style={styles.formGroup}>
         <Text style={styles.label}>Amount</Text>
         <View style={styles.inputContainer}>
           <Text style={styles.currencySymbol}>$</Text>
@@ -286,6 +286,8 @@ export default function Deposit() {
       <Ionicons name="exit-outline" size={24} color="white" style={styles.exitIcon} />
       <Text style={{color: 'white', marginLeft: 10}}>Crypto Deposit</Text>
     </TouchableOpacity>
+        </>
+      )}
     </View>
 
     </ScrollView>
