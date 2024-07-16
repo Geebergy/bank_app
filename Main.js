@@ -549,6 +549,15 @@ const fetchTransactions = async () => {
   }
 };
 
+const refreshData = async () =>{
+  const userId = await AsyncStorage.getItem('userId');
+  handleGetUser(userId);
+};
+
+useEffect(() => {
+  refreshData();
+}, []);
+
 useEffect(() => {
   fetchTransactions();
 }, []);
@@ -578,7 +587,7 @@ const MyModal = () => (
         ) : transactions !== null && transactions.length > 0 ? (
           <Text style={styles.amountText}>
               <Text style={styles.pendingText}>Pending Loan: </Text>
-              <Text style={styles.amount}>{transactions[0].amount}</Text>
+              <Text style={styles.amount}>${transactions[0].amount}</Text>
             </Text>
         ) : (
           <Text style={styles.noneText}>No pending loans</Text>
@@ -655,7 +664,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
+    marginTop: 15,
   },
   pendingText: {
     // fontSize: 18,

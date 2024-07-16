@@ -123,11 +123,6 @@ export default function AccountManager({navigation}) {
     const handleUpdate = async () => {
       const userId = await AsyncStorage.getItem('userId');
       try {
-        const userInfo = {
-          image: imageUri,
-          phone: phoneNumber,
-          userId: userId
-        }
         let formData = new FormData();
         formData.append('image', imageUri)
         formData.append('phone', phoneNumber);
@@ -135,7 +130,7 @@ export default function AccountManager({navigation}) {
   
         let response = await fetch('https://bank-app-4f6l.onrender.com/user/update-profile', {
           method: 'POST',
-          body: userInfo,
+          body: formData,
           headers: {
             'Content-Type': 'multipart/form-data',
           },

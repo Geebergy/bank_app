@@ -290,6 +290,6 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 // Route definition
-app.post('/update-profile', updateProfile);
+app.post('/update-profile', upload.single('image'), updateProfile);
 // Export your app instance for use in other files
 module.exports = app;
